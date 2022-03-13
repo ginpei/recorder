@@ -1,5 +1,5 @@
 import { BasicLayout } from './layouts/BasicLayout';
-import { useError } from './misc/error';
+import { useError } from './misc/errorHooks';
 import { Recorder } from './simples/Recorder';
 
 function App() {

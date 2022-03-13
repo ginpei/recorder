@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { SetError, toError } from "../misc/error";
+import { useState } from "react";
+import { toError } from "../misc/error";
+import { SetError } from "../misc/errorHooks";
 import { VStack } from "./VStack";
 
 export interface RecorderProps {
