@@ -1,16 +1,7 @@
-import { useError } from './misc/errorHooks';
-import { BasicLayout } from './ui/layouts/BasicLayout';
-import { Recorder } from './ui/simples/Recorder';
+import { RecorderPage } from './ui/pages/recorder/RecorderPage';
 
 function App() {
-  const [error, setError] = useError();
-
-  return (
-    <BasicLayout>
-      {error && (<div>ERROR: {error.message}</div>)}
-      <Recorder setError={setError} />
-    </BasicLayout>
-  )
+  return <RecorderPage />;
 }
 
 export default App
