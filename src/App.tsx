@@ -1,6 +1,6 @@
-import { BasicLayout } from './layouts/BasicLayout';
 import { useError } from './misc/errorHooks';
-import { Recorder } from './simples/Recorder';
+import { BasicLayout } from './ui/layouts/BasicLayout';
+import { Recorder } from './ui/simples/Recorder';
 
 function App() {
   const [error, setError] = useError();
