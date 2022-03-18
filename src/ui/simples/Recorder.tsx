@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toError } from "../../misc/error";
 import { SetError } from "../../misc/errorHooks";
+import { HStack } from "./HStack";
 import { NiceButton } from "./NiceButton";
 import { VStack } from "./VStack";
 
@@ -61,14 +62,14 @@ export function Recorder({
   return (
     <div className="Recorder">
       <VStack>
-        <div>
+        <HStack>
           <NiceButton disabled={recording} onClick={onRecordClick}>
             Record
           </NiceButton>
           <NiceButton disabled={!mediaRecorder || !recording} onClick={onStopClick}>
             Stop
           </NiceButton>
-        </div>
+        </HStack>
         <div>
           <audio controls src={audioSrc}></audio>
         </div>
