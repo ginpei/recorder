@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toError } from "../../misc/error";
 import { SetError } from "../../misc/errorHooks";
+import { NiceButton } from "./NiceButton";
 import { VStack } from "./VStack";
 
 export interface RecorderProps {
@@ -61,10 +62,12 @@ export function Recorder({
     <div className="Recorder">
       <VStack>
         <div>
-          <button disabled={recording} onClick={onRecordClick}>Record</button>
-          <button disabled={!mediaRecorder || !recording} onClick={onStopClick}>
+          <NiceButton disabled={recording} onClick={onRecordClick}>
+            Record
+          </NiceButton>
+          <NiceButton disabled={!mediaRecorder || !recording} onClick={onStopClick}>
             Stop
-          </button>
+          </NiceButton>
         </div>
         <div>
           <audio controls src={audioSrc}></audio>
