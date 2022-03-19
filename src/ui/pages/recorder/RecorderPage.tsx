@@ -1,6 +1,6 @@
 import { useError } from "../../../misc/errorHooks";
 import { BasicLayout } from "../../layouts/BasicLayout";
-import { Recorder } from "../../simples/Recorder";
+import { Recorder } from "../../complexes/Recorder";
 
 export interface RecorderPageProps {
 }

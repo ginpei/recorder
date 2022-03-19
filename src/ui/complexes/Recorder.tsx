@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { toError } from "../../misc/error";
 import { SetError } from "../../misc/errorHooks";
-import { HStack } from "./HStack";
-import { NiceButton } from "./NiceButton";
-import { VStack } from "./VStack";
+import { HStack } from "../simples/HStack";
+import { NiceButton } from "../simples/NiceButton";
+import { VStack } from "../simples/VStack";
 
 export interface RecorderProps {
   setError: SetError;
