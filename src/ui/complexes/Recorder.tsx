@@ -16,7 +16,7 @@ export function Recorder({
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [chunks, setChunks] = useState<Blob[]>([]);
   const [recording, setRecording] = useState(false);
-  const [audioUrl, setAudio] = useAudioDataContext();
+  const [, setAudio] = useAudioDataContext();
 
   const onRecordClick = async () => {
     try {
@@ -60,19 +60,14 @@ export function Recorder({
 
   return (
     <div className="Recorder">
-      <VStack>
-        <HStack>
-          <NiceButton disabled={recording} onClick={onRecordClick}>
-            Record
-          </NiceButton>
-          <NiceButton disabled={!mediaRecorder || !recording} onClick={onStopClick}>
-            Stop
-          </NiceButton>
-        </HStack>
-        <div>
-          <audio controls src={audioUrl}></audio>
-        </div>
-      </VStack>
+      <HStack>
+        <NiceButton disabled={recording} onClick={onRecordClick}>
+          Record
+        </NiceButton>
+        <NiceButton disabled={!mediaRecorder || !recording} onClick={onStopClick}>
+          Stop
+        </NiceButton>
+      </HStack>
     </div>
   );
 }
