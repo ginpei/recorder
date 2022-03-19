@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useAudioDataContext } from "../../data/AudioDataContext";
 import { toError } from "../../misc/error";
 import { SetError } from "../../misc/errorHooks";
 import { HStack } from "../simples/HStack";
@@ -15,9 +16,7 @@ export function Recorder({
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [chunks, setChunks] = useState<Blob[]>([]);
   const [recording, setRecording] = useState(false);
-  const [audio, setAudio] = useState<Blob>(new Blob());
-
-  const audioUrl = useMemo(() => URL.createObjectURL(audio), [audio]);
+  const [audioUrl, setAudio] = useAudioDataContext();
 
   const onRecordClick = async () => {
     try {
