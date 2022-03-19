@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toError } from "../../misc/error";
 import { SetError } from "../../misc/errorHooks";
 import { HStack } from "../simples/HStack";
@@ -14,15 +14,16 @@ export function Recorder({
 }: RecorderProps): JSX.Element {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [chunks, setChunks] = useState<Blob[]>([]);
-  const [audioSrc, setAudioSrc] = useState<string | undefined>(undefined);
   const [recording, setRecording] = useState(false);
+  const [audio, setAudio] = useState<Blob>(new Blob());
+
+  const audioUrl = useMemo(() => URL.createObjectURL(audio), [audio]);
 
   const onRecordClick = async () => {
     try {
       setError(null);
       setMediaRecorder(null);
       setChunks([]);
-      setAudioSrc(undefined);
       setRecording(true);
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -35,9 +36,8 @@ export function Recorder({
       };
 
       newRecorder.onstop = () => {
-        const blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
-        const src = URL.createObjectURL(blob);
-        setAudioSrc(src);
+        const newAudio = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
+        setAudio(newAudio);
       };
 
       newRecorder.start();
@@ -71,7 +71,7 @@ export function Recorder({
           </NiceButton>
         </HStack>
         <div>
-          <audio controls src={audioSrc}></audio>
+          <audio controls src={audioUrl}></audio>
         </div>
       </VStack>
     </div>
