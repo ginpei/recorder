@@ -36,7 +36,7 @@ function setPlayerUrl(url: string) {
   $<HTMLAudioElement>('#player').src = url;
 }
 
-function $<T extends Element>(selector: string, parent: Element | Document = document) {
+function $<T extends HTMLElement>(selector: string, parent: Element | Document = document) {
   const el = parent.querySelector<T>(selector);
   if (!(el instanceof HTMLElement)) {
     throw new Error(`Failed to find "${selector}"`);
