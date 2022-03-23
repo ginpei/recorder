@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "concurrently -n 'WWW,TS ' -c 'white.bgGreen,white.bgBlue' 'npx @ginpei/http' 'tsc -p . -w'"
+  },
+  "devDependencies": {
+    "@ginpei/http": "^1.0.1",
+    "concurrently": "^7.0.0",
+    "git-cz": "^4.8.0",
+    "typescript": "^4.6.2"
+  }
+}
