@@ -4,6 +4,7 @@ let audioBlob = new Blob();
 export function main() {
   $('#record').onclick = onRecordClick;
   $('#stop').onclick = onStopClick;
+  $('#cut1').onclick = onCut1Click;
 }
 
 async function onRecordClick() {
@@ -13,6 +14,33 @@ async function onRecordClick() {
 
 async function onStopClick() {
   audioRecorder?.stop();
+}
+
+async function onCut1Click() {
+  const context = new AudioContext();
+  const oBuf = await context.decodeAudioData(await audioBlob.arrayBuffer());
+
+  const offsetSec = 1.00;
+  const offset = offsetSec * oBuf.sampleRate;
+  const numChannel = oBuf.numberOfChannels;
+  const length = oBuf.length - offset;
+
+  if (length < 1) {
+    throw new Error("Not enough duration");
+  }
+
+  const nBuf = context.createBuffer(numChannel, length, oBuf.sampleRate);
+
+  for (let iChannel = 0; iChannel < numChannel; iChannel++) {
+    const oData = oBuf.getChannelData(iChannel);
+    const nData = nBuf.getChannelData(iChannel);
+    for (let iBuf = 0; iBuf < length; iBuf++) {
+      nData[iBuf] = oData[offset + iBuf];
+    }
+  }
+
+  // WIP
+  console.log('# duration', `${oBuf.duration} -> ${nBuf.duration}`);
 }
 
 async function createRecorder(): Promise<MediaRecorder> {
