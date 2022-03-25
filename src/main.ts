@@ -1,5 +1,8 @@
+import toWav from 'audiobuffer-to-wav';
+
 let audioRecorder: MediaRecorder | null = null;
 let audioBlob = new Blob();
+let audioType: '' | 'wave' | 'ogg' = ''; // TODO
 
 export function main() {
   $('#record').onclick = onRecordClick;
@@ -39,8 +42,9 @@ async function onCut1Click() {
     }
   }
 
-  // WIP
-  console.log('# duration', `${oBuf.duration} -> ${nBuf.duration}`);
+  const arrWav = toWav(nBuf);
+  const blobWav = new Blob([arrWav]);
+  setAudioBlob(blobWav, 'wave');
 }
 
 async function createRecorder(): Promise<MediaRecorder> {
@@ -55,14 +59,15 @@ async function createRecorder(): Promise<MediaRecorder> {
 
   recorder.onstop = () => {
     const blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
-    setAudioBlob(blob);
+    setAudioBlob(blob, 'ogg');
   };
 
   return recorder;
 }
 
-function setAudioBlob(newAudioBlob: Blob) {
+function setAudioBlob(newAudioBlob: Blob, type: 'wave' | 'ogg') {
   audioBlob = newAudioBlob;
+  audioType = type;
   const url = URL.createObjectURL(audioBlob);
   setPlayerUrl(url);
   addDownloadLink(url);
@@ -75,9 +80,10 @@ function setPlayerUrl(url: string) {
 
 function addDownloadLink(url: string) {
   const text = new Date().toISOString();
+  const ext = audioType === 'wave' ? '.wav' : '.ogg';
 
   const el = document.createElement('a');
-  el.download = `${text}.oga`;
+  el.download = `${text}${ext}`;
   el.href = url;
   el.textContent = text;
 
