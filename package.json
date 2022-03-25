@@ -1,12 +1,15 @@
 {
   "private": true,
   "scripts": {
-    "start": "concurrently -n 'WWW,TS ' -c 'white.bgGreen,white.bgBlue' 'npx @ginpei/http' 'tsc -p . -w'"
+    "build": "rollup -c",
+    "start": "concurrently -n 'WWW,TS ' -c 'white.bgGreen,white.bgBlue' 'npx @ginpei/http' 'rollup -c -w'"
   },
   "devDependencies": {
     "@ginpei/http": "^1.0.1",
+    "@rollup/plugin-typescript": "^8.3.1",
     "concurrently": "^7.0.0",
     "git-cz": "^4.8.0",
+    "rollup": "^2.70.1",
     "typescript": "^4.6.2"
   }
 }
