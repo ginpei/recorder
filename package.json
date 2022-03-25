@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "build": "rollup -c",
-    "start": "concurrently -n 'WWW,TS ' -c 'white.bgGreen,white.bgBlue' 'npx @ginpei/http' 'rollup -c -w'"
+    "server": "npx @ginpei/http",
+    "start": "concurrently -n 'WWW,TS ' -c 'white.bgGreen,white.bgBlue' 'npm run server' 'npm run build -- -w'"
   },
   "devDependencies": {
     "@ginpei/http": "^1.0.1",
