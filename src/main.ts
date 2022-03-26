@@ -1,16 +1,7 @@
 import toWav from 'audiobuffer-to-wav';
+import { createEditorContext } from './EditorContext';
 
-interface EditorContext {
-  audioBlob: Blob;
-  audioRecorder: MediaRecorder | null;
-  audioType: '' | 'wave' | 'ogg';
-}
-
-const editorContext: EditorContext = {
-  audioBlob: new Blob(),
-  audioRecorder: null,
-  audioType: '',
-};
+const editorContext = createEditorContext();
 
 export function main() {
   $('#record').onclick = onRecordClick;
