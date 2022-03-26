@@ -6,7 +6,7 @@ const editorContext = createEditorContext();
 export function main() {
   $('#record').onclick = onRecordClick;
   $('#stop').onclick = onStopClick;
-  $('#cut').onclick = onCutClick;
+  $('#trim').onclick = onTrimClick;
 }
 
 async function onRecordClick() {
@@ -18,13 +18,13 @@ async function onStopClick() {
   editorContext.audioRecorder?.stop();
 }
 
-function onCutClick() {
-  cut();
+function onTrimClick() {
+  trim();
 }
 
-async function cut() {
-  const startOffsetSec = $<HTMLInputElement>("#cutStartSec").valueAsNumber;
-  const endOffsetSec = $<HTMLInputElement>("#cutEndSec").valueAsNumber;
+async function trim() {
+  const startOffsetSec = $<HTMLInputElement>("#trimStartSec").valueAsNumber;
+  const endOffsetSec = $<HTMLInputElement>("#trimEndSec").valueAsNumber;
   const originalArrayBuffer = await editorContext.originalAudioBlob.arrayBuffer();
 
   const context = new AudioContext();
