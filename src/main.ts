@@ -1,8 +1,16 @@
 import toWav from 'audiobuffer-to-wav';
 
-let audioRecorder: MediaRecorder | null = null;
-let audioBlob = new Blob();
-let audioType: '' | 'wave' | 'ogg' = ''; // TODO
+interface EditorContext {
+  audioBlob: Blob;
+  audioRecorder: MediaRecorder | null;
+  audioType: '' | 'wave' | 'ogg';
+}
+
+const editorContext: EditorContext = {
+  audioBlob: new Blob(),
+  audioRecorder: null,
+  audioType: '',
+};
 
 export function main() {
   $('#record').onclick = onRecordClick;
@@ -11,17 +19,17 @@ export function main() {
 }
 
 async function onRecordClick() {
-  audioRecorder = await createRecorder();
-  audioRecorder.start();
+  editorContext.audioRecorder = await createRecorder();
+  editorContext.audioRecorder.start();
 }
 
 async function onStopClick() {
-  audioRecorder?.stop();
+  editorContext.audioRecorder?.stop();
 }
 
 async function onCut1Click() {
   const context = new AudioContext();
-  const oBuf = await context.decodeAudioData(await audioBlob.arrayBuffer());
+  const oBuf = await context.decodeAudioData(await editorContext.audioBlob.arrayBuffer());
 
   const offsetSec = 1.00;
   const offset = offsetSec * oBuf.sampleRate;
@@ -65,9 +73,9 @@ async function createRecorder(): Promise<MediaRecorder> {
   return recorder;
 }
 
-function setAudioBlob(newAudioBlob: Blob, type: 'wave' | 'ogg') {
-  audioBlob = newAudioBlob;
-  audioType = type;
+function setAudioBlob(audioBlob: Blob, type: 'wave' | 'ogg') {
+  editorContext.audioBlob = audioBlob;
+  editorContext.audioType = type;
   const url = URL.createObjectURL(audioBlob);
   setPlayerUrl(url);
   addDownloadLink(url);
@@ -80,7 +88,7 @@ function setPlayerUrl(url: string) {
 
 function addDownloadLink(url: string) {
   const text = new Date().toISOString();
-  const ext = audioType === 'wave' ? '.wav' : '.ogg';
+  const ext = editorContext.audioType === 'wave' ? '.wav' : '.ogg';
 
   const el = document.createElement('a');
   el.download = `${text}${ext}`;
