@@ -6,7 +6,7 @@ const editorContext = createEditorContext();
 export function main() {
   $('#record').onclick = onRecordClick;
   $('#stop').onclick = onStopClick;
-  $('#cut1').onclick = onCut1Click;
+  $('#cutStart').onclick = onCutStartClick;
 }
 
 async function onRecordClick() {
@@ -18,11 +18,13 @@ async function onStopClick() {
   editorContext.audioRecorder?.stop();
 }
 
-async function onCut1Click() {
-  const context = new AudioContext();
-  const oBuf = await context.decodeAudioData(await editorContext.audioBlob.arrayBuffer());
+async function onCutStartClick() {
+  const offsetSec = $<HTMLInputElement>("#cutStartSec").valueAsNumber;
+  const originalArrayBuffer = await editorContext.originalAudioBlob.arrayBuffer();
 
-  const offsetSec = 1.00;
+  const context = new AudioContext();
+  const oBuf = await context.decodeAudioData(originalArrayBuffer);
+
   const offset = offsetSec * oBuf.sampleRate;
   const numChannel = oBuf.numberOfChannels;
   const length = oBuf.length - offset;
@@ -58,10 +60,15 @@ async function createRecorder(): Promise<MediaRecorder> {
 
   recorder.onstop = () => {
     const blob = new Blob(chunks, { 'type': 'audio/ogg; codecs=opus' });
-    setAudioBlob(blob, 'ogg');
+    setOriginalAudioBlob(blob);
   };
 
   return recorder;
+}
+
+function setOriginalAudioBlob(audioBlob: Blob) {
+  editorContext.originalAudioBlob = audioBlob;
+  setAudioBlob(audioBlob, 'ogg');
 }
 
 function setAudioBlob(audioBlob: Blob, type: 'wave' | 'ogg') {
