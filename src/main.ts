@@ -33,17 +33,18 @@ async function trim() {
     startOffsetSec,
     endOffsetSec
   );
-  const left = nBuf.getChannelData(0);
+  // const left = nBuf.getChannelData(0);
 
   const arrWav = toWav(nBuf);
-  const blobWav = new Blob([arrWav]);
 
   const channels = nBuf.numberOfChannels;
   const sampleRate = nBuf.sampleRate;
   const kBps = 128;
   const encoder = new lamejs.Mp3Encoder(channels, sampleRate, kBps);
 
-  const samples = new Int16Array(arrWav);
+  const wavHeader = lamejs.WavHeader.readHeader(new DataView(arrWav));
+  const samples = new Int16Array(arrWav, wavHeader.dataOffset, wavHeader.dataLen / 2);
+
   const mp3Chunks: Int8Array[] = [];
   const chunk = encoder.encodeBuffer(samples);
   if (chunk.length > 0) {

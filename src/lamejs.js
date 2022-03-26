@@ -14,17 +14,16 @@
  *     };
  *   };
  *   WavHeader: {
- *     new (): {
- *       channels: 0;
- *       dataLen: 0;
- *       dataOffset: 0;
- *       sampleRate: 0;
- *     };
  *     readonly data: 1684108385;
  *     readonly fmt_: 1718449184;
  *     readonly RIFF: 1380533830;
  *     readonly WAVE: 1463899717;
- *     readHeader(dataView: DataView): unknown;
+ *     readHeader(dataView: DataView): {
+ *       channels: number;
+ *       dataLen: number;
+ *       dataOffset: number;
+ *       sampleRate: number;
+ *     };
  *   };
  * }} LameJs
  */
