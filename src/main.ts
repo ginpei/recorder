@@ -44,16 +44,16 @@ async function trim() {
   const encoder = new lamejs.Mp3Encoder(channels, sampleRate, kBps);
 
   const samples = new Int16Array(arrWav);
-  const mp3Arrays: Int8Array[] = [];
+  const mp3Chunks: Int8Array[] = [];
   const chunk = encoder.encodeBuffer(samples);
   if (chunk.length > 0) {
-    mp3Arrays.push(chunk);
+    mp3Chunks.push(chunk);
   }
   const lastChunk = encoder.flush();
   if (lastChunk.length > 0) {
-    mp3Arrays.push(lastChunk);
+    mp3Chunks.push(lastChunk);
   }
-  const mp3Blob = new Blob(mp3Arrays, { type: 'audio/mp3' });
+  const mp3Blob = new Blob(mp3Chunks, { type: 'audio/mp3' });
 
   // setAudioBlob(blobWav, 'wave');
   setAudioBlob(mp3Blob, 'mp3');
