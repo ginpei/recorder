@@ -6,7 +6,7 @@ const editorContext = createEditorContext();
 export function main() {
   $('#record').onclick = onRecordClick;
   $('#stop').onclick = onStopClick;
-  $('#cutStart').onclick = onCutStartClick;
+  $('#cut').onclick = onCutClick;
 }
 
 async function onRecordClick() {
@@ -18,16 +18,22 @@ async function onStopClick() {
   editorContext.audioRecorder?.stop();
 }
 
-async function onCutStartClick() {
-  const offsetSec = $<HTMLInputElement>("#cutStartSec").valueAsNumber;
+function onCutClick() {
+  cut();
+}
+
+async function cut() {
+  const startOffsetSec = $<HTMLInputElement>("#cutStartSec").valueAsNumber;
+  const endOffsetSec = $<HTMLInputElement>("#cutEndSec").valueAsNumber;
   const originalArrayBuffer = await editorContext.originalAudioBlob.arrayBuffer();
 
   const context = new AudioContext();
   const oBuf = await context.decodeAudioData(originalArrayBuffer);
 
-  const offset = offsetSec * oBuf.sampleRate;
+  const startOffset = startOffsetSec * oBuf.sampleRate;
+  const endOffset = endOffsetSec * oBuf.sampleRate;
   const numChannel = oBuf.numberOfChannels;
-  const length = oBuf.length - offset;
+  const length = oBuf.length - startOffset - endOffset;
 
   if (length < 1) {
     throw new Error("Not enough duration");
@@ -39,7 +45,7 @@ async function onCutStartClick() {
     const oData = oBuf.getChannelData(iChannel);
     const nData = nBuf.getChannelData(iChannel);
     for (let iBuf = 0; iBuf < length; iBuf++) {
-      nData[iBuf] = oData[offset + iBuf];
+      nData[iBuf] = oData[startOffset + iBuf];
     }
   }
 
