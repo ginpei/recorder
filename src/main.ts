@@ -1,4 +1,5 @@
 import toWav from 'audiobuffer-to-wav';
+import { trimBlob } from './audioHandlers';
 import { createEditorContext } from './EditorContext';
 
 const editorContext = createEditorContext();
@@ -25,29 +26,12 @@ function onTrimClick() {
 async function trim() {
   const startOffsetSec = $<HTMLInputElement>("#trimStartSec").valueAsNumber;
   const endOffsetSec = $<HTMLInputElement>("#trimEndSec").valueAsNumber;
-  const originalArrayBuffer = await editorContext.originalAudioBlob.arrayBuffer();
 
-  const context = new AudioContext();
-  const oBuf = await context.decodeAudioData(originalArrayBuffer);
-
-  const startOffset = startOffsetSec * oBuf.sampleRate;
-  const endOffset = endOffsetSec * oBuf.sampleRate;
-  const numChannel = oBuf.numberOfChannels;
-  const length = oBuf.length - startOffset - endOffset;
-
-  if (length < 1) {
-    throw new Error("Not enough duration");
-  }
-
-  const nBuf = context.createBuffer(numChannel, length, oBuf.sampleRate);
-
-  for (let iChannel = 0; iChannel < numChannel; iChannel++) {
-    const oData = oBuf.getChannelData(iChannel);
-    const nData = nBuf.getChannelData(iChannel);
-    for (let iBuf = 0; iBuf < length; iBuf++) {
-      nData[iBuf] = oData[startOffset + iBuf];
-    }
-  }
+  const nBuf = await trimBlob(
+    editorContext.originalAudioBlob,
+    startOffsetSec,
+    endOffsetSec
+  );
 
   const arrWav = toWav(nBuf);
   const blobWav = new Blob([arrWav]);
