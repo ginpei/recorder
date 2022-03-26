@@ -1,4 +1,5 @@
 import toWav from 'audiobuffer-to-wav';
+import lamejs from "./lamejs";
 import { trimBlob } from './audioHandlers';
 import { createEditorContext } from './EditorContext';
 
@@ -32,10 +33,30 @@ async function trim() {
     startOffsetSec,
     endOffsetSec
   );
+  const left = nBuf.getChannelData(0);
 
   const arrWav = toWav(nBuf);
   const blobWav = new Blob([arrWav]);
-  setAudioBlob(blobWav, 'wave');
+
+  const channels = nBuf.numberOfChannels;
+  const sampleRate = nBuf.sampleRate;
+  const kBps = 128;
+  const encoder = new lamejs.Mp3Encoder(channels, sampleRate, kBps);
+
+  const samples = new Int16Array(arrWav);
+  const mp3Arrays: Int8Array[] = [];
+  const chunk = encoder.encodeBuffer(samples);
+  if (chunk.length > 0) {
+    mp3Arrays.push(chunk);
+  }
+  const lastChunk = encoder.flush();
+  if (lastChunk.length > 0) {
+    mp3Arrays.push(lastChunk);
+  }
+  const mp3Blob = new Blob(mp3Arrays, { type: 'audio/mp3' });
+
+  // setAudioBlob(blobWav, 'wave');
+  setAudioBlob(mp3Blob, 'mp3');
 }
 
 async function createRecorder(): Promise<MediaRecorder> {
@@ -61,7 +82,7 @@ function setOriginalAudioBlob(audioBlob: Blob) {
   setAudioBlob(audioBlob, 'ogg');
 }
 
-function setAudioBlob(audioBlob: Blob, type: 'wave' | 'ogg') {
+function setAudioBlob(audioBlob: Blob, type: 'wave' | 'ogg' | 'mp3') {
   editorContext.audioBlob = audioBlob;
   editorContext.audioType = type;
   const url = URL.createObjectURL(audioBlob);
@@ -70,13 +91,21 @@ function setAudioBlob(audioBlob: Blob, type: 'wave' | 'ogg') {
 }
 
 function setPlayerUrl(url: string) {
-  const elPlayer = $<HTMLAudioElement>('#player');
+  const elPlayer =
+    editorContext.audioType === "mp3"
+      ? $<HTMLAudioElement>('#player-mp3')
+      : $<HTMLAudioElement>('#player');
   elPlayer.src = url;
 }
 
 function addDownloadLink(url: string) {
   const text = new Date().toISOString();
-  const ext = editorContext.audioType === 'wave' ? '.wav' : '.ogg';
+  const ext = {
+    "": "",
+    mp3: ".mp3",
+    ogg: ".oga",
+    wave: ".wav",
+  }[editorContext.audioType];
 
   const el = document.createElement('a');
   el.download = `${text}${ext}`;

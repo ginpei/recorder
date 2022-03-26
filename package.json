@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --outdir=dest/",
+    "build": "esbuild src/index.ts --bundle --sourcemap --outdir=dest/",
     "server": "npx @ginpei/http",
     "start": "concurrently -n 'WWW,TS ' -c 'white.bgGreen,white.bgBlue' 'npm run server' 'npm run build -- --watch'"
   },
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@types/audiobuffer-to-wav": "^1.0.2",
-    "audiobuffer-to-wav": "^1.0.0"
+    "audiobuffer-to-wav": "^1.0.0",
+    "lamejs": "github:zhuker/lamejs#582bbba6a12f981b984d8fb9e1874499fed85675"
   }
 }

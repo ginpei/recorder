@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dest",
     "preserveWatchOutput": true,
