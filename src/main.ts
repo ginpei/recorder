@@ -34,9 +34,12 @@ async function trim() {
   );
 
   const arrWav = toWav(nBuf);
-  const channels = nBuf.numberOfChannels;
-  const sampleRate = nBuf.sampleRate;
-  const mp3Blob = await wavToMp3(arrWav, channels, sampleRate);
+
+  const mp3Blob = await wavToMp3(
+    arrWav,
+    nBuf.numberOfChannels,
+    nBuf.sampleRate
+  );
 
   // setAudioBlob(blobWav, 'wave');
   setAudioBlob(mp3Blob, 'mp3');
