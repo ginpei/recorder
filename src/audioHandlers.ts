@@ -65,11 +65,18 @@ function extractSamplesFromWav(arrWav: ArrayBuffer) {
 function encodeWavToMp3(encoder: lamejs.Mp3Encoder, samples: Int16Array) {
   const mp3Chunks: Int8Array[] = [];
 
-  console.time(`# encode`);
-  const chunk = encoder.encodeBuffer(samples);
-  console.timeEnd(`# encode`);
-  if (chunk.length > 0) {
-    mp3Chunks.push(chunk);
+  // lamejs says a multiple of 576 is better
+  // https://github.com/zhuker/lamejs/blob/master/README.md#real-example
+  const sampleSize = 2 * 576;
+
+  for (let begin = 0; begin < samples.length; begin += sampleSize) {
+    const end = begin + sampleSize;
+    const subSamples = samples.subarray(begin, end);
+
+    const chunk = encoder.encodeBuffer(subSamples);
+    if (chunk.length > 0) {
+      mp3Chunks.push(chunk);
+    }
   }
 
   const lastChunk = encoder.flush();
