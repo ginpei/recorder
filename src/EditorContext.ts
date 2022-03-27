@@ -1,7 +1,7 @@
 export interface EditorContext {
   audioBlob: Blob;
   audioRecorder: MediaRecorder | null;
-  audioType: "" | "wave" | "ogg" | "mp3";
+  audioType: "" | "ogg" | "mp3";
   originalAudioBlob: Blob;
 }
 

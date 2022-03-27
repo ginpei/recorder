@@ -41,7 +41,6 @@ async function trim() {
     nBuf.sampleRate
   );
 
-  // setAudioBlob(blobWav, 'wave');
   setAudioBlob(mp3Blob, 'mp3');
 }
 
@@ -68,7 +67,7 @@ function setOriginalAudioBlob(audioBlob: Blob) {
   setAudioBlob(audioBlob, 'ogg');
 }
 
-function setAudioBlob(audioBlob: Blob, type: 'wave' | 'ogg' | 'mp3') {
+function setAudioBlob(audioBlob: Blob, type: 'ogg' | 'mp3') {
   editorContext.audioBlob = audioBlob;
   editorContext.audioType = type;
   const url = URL.createObjectURL(audioBlob);
@@ -90,7 +89,6 @@ function addDownloadLink(url: string) {
     "": "",
     mp3: ".mp3",
     ogg: ".oga",
-    wave: ".wav",
   }[editorContext.audioType];
 
   const el = document.createElement('a');
