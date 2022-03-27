@@ -1,6 +1,11 @@
 import lamejs from "./lamejs";
 import { sleep } from "./misc";
 
+/**
+ * @param progress `0`-`1`
+ */
+type OnProgress = (progress: number) => void;
+
 export async function trimBlob(
   blob: Blob,
   startOffsetSec: number,
@@ -39,7 +44,8 @@ export async function trimBlob(
 export async function wavToMp3(
   arrWav: ArrayBuffer,
   channels: number,
-  sampleRate: number
+  sampleRate: number,
+  onProgress?: OnProgress
 ): Promise<Blob> {
   if (channels !== 1) {
     throw new Error(`Unsupported number of channels: ${channels}`);
@@ -49,7 +55,8 @@ export async function wavToMp3(
 
   const kBps = 128;
   const encoder = new lamejs.Mp3Encoder(channels, sampleRate, kBps);
-  const mp3Chunks: Int8Array[] = await encodeWavToMp3(encoder, samples);
+  const mp3Chunks: Int8Array[] =
+    await encodeWavToMp3(encoder, samples, onProgress);
 
   const mp3Blob = new Blob(mp3Chunks, { type: 'audio/mp3' });
   return mp3Blob;
@@ -62,7 +69,11 @@ function extractSamplesFromWav(arrWav: ArrayBuffer) {
   return samples;
 }
 
-async function encodeWavToMp3(encoder: lamejs.Mp3Encoder, samples: Int16Array) {
+async function encodeWavToMp3(
+  encoder: lamejs.Mp3Encoder,
+  samples: Int16Array,
+  onProgress?: OnProgress
+) {
   const mp3Chunks: Int8Array[] = [];
 
   // lamejs says a multiple of 576 is better
@@ -93,12 +104,19 @@ async function encodeWavToMp3(encoder: lamejs.Mp3Encoder, samples: Int16Array) {
       await sleep(jankThreshold);
       startedAt = Date.now();
     }
+
+    if (onProgress) {
+      const progress = end / samples.length;
+      onProgress(progress);
+    }
   }
 
   const lastChunk = encoder.flush();
   if (lastChunk.length > 0) {
     mp3Chunks.push(lastChunk);
   }
+
+  onProgress?.(1);
 
   return mp3Chunks;
 }

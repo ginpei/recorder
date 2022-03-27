@@ -27,6 +27,8 @@ async function trim() {
   const startOffsetSec = $<HTMLInputElement>("#trimStartSec").valueAsNumber;
   const endOffsetSec = $<HTMLInputElement>("#trimEndSec").valueAsNumber;
 
+  setProgress(-1);
+
   const nBuf = await trimBlob(
     editorContext.originalAudioBlob,
     startOffsetSec,
@@ -38,7 +40,8 @@ async function trim() {
   const mp3Blob = await wavToMp3(
     arrWav,
     nBuf.numberOfChannels,
-    nBuf.sampleRate
+    nBuf.sampleRate,
+    (progress) => setProgress(progress)
   );
 
   setAudioBlob(mp3Blob, 'mp3');
@@ -81,6 +84,15 @@ function setPlayerUrl(url: string) {
       ? $<HTMLAudioElement>('#player-mp3')
       : $<HTMLAudioElement>('#player');
   elPlayer.src = url;
+}
+
+function setProgress(progress: number) {
+  if (progress < 0) {
+    $<HTMLProgressElement>("#trimProgress").removeAttribute('value');
+    return;
+  }
+
+  $<HTMLProgressElement>("#trimProgress").value = progress;
 }
 
 function addDownloadLink(url: string) {
