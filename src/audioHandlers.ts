@@ -1,4 +1,5 @@
 import lamejs from "./lamejs";
+import { sleep } from "./misc";
 
 export async function trimBlob(
   blob: Blob,
@@ -44,12 +45,11 @@ export async function wavToMp3(
     throw new Error(`Unsupported number of channels: ${channels}`);
   }
 
-  const kBps = 128;
-  const encoder = new lamejs.Mp3Encoder(channels, sampleRate, kBps);
-
   const samples = extractSamplesFromWav(arrWav);
 
-  const mp3Chunks: Int8Array[] = encodeWavToMp3(encoder, samples);
+  const kBps = 128;
+  const encoder = new lamejs.Mp3Encoder(channels, sampleRate, kBps);
+  const mp3Chunks: Int8Array[] = await encodeWavToMp3(encoder, samples);
 
   const mp3Blob = new Blob(mp3Chunks, { type: 'audio/mp3' });
   return mp3Blob;
@@ -62,20 +62,36 @@ function extractSamplesFromWav(arrWav: ArrayBuffer) {
   return samples;
 }
 
-function encodeWavToMp3(encoder: lamejs.Mp3Encoder, samples: Int16Array) {
+async function encodeWavToMp3(encoder: lamejs.Mp3Encoder, samples: Int16Array) {
   const mp3Chunks: Int8Array[] = [];
 
   // lamejs says a multiple of 576 is better
   // https://github.com/zhuker/lamejs/blob/master/README.md#real-example
   const sampleSize = 2 * 576;
 
-  for (let begin = 0; begin < samples.length; begin += sampleSize) {
+  for (
+    let begin = 0, startedAt = Date.now();
+    begin < samples.length;
+    begin += sampleSize
+  ) {
     const end = begin + sampleSize;
     const subSamples = samples.subarray(begin, end);
 
     const chunk = encoder.encodeBuffer(subSamples);
     if (chunk.length > 0) {
       mp3Chunks.push(chunk);
+    }
+
+    // https://www.html5rocks.com/en/tutorials/speed/rendering/
+    // (probably there are better explanations for this context)
+    // (not junk btw)
+    const jankThreshold = 16;
+
+    // avoid from freezing UI
+    // TODO move to worker
+    if (Date.now() - startedAt > jankThreshold) {
+      await sleep(jankThreshold);
+      startedAt = Date.now();
     }
   }
 
