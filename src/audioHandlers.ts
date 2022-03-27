@@ -40,6 +40,10 @@ export async function wavToMp3(
   channels: number,
   sampleRate: number
 ): Promise<Blob> {
+  if (channels !== 1) {
+    throw new Error(`Unsupported number of channels: ${channels}`);
+  }
+
   const kBps = 128;
   const encoder = new lamejs.Mp3Encoder(channels, sampleRate, kBps);
 
